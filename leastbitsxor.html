@@ -1,0 +1,92 @@
+<!DOCYTPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Home - Karaoke thingybobber</title>
+	<link rel="stylesheet" href="apricity.css">
+</head>
+<body>
+	<nav>
+		<ol>
+			<li><a href="index.html">Home</a></li>
+			<li><a href="csssvg.html">CSS SVG demo</a></li>
+			<li><a href="piano2.html">Piano for transcription help</a></li>
+			<li><a href="delancie.html">Images of John de Lancie</a></li>
+		</ol>
+	</nav>
+	<script>
+(function() {
+const canvas = document.createElement("canvas");
+document.body.appendChild(canvas);
+canvas.style.border = "1px solid #000";
+let ctx = canvas.getContext("2d");
+const inputFile = document.createElement("input");
+inputFile.type = "file";
+document.body.appendChild(inputFile);
+const inputText = document.createElement("textarea");
+document.body.appendChild(inputText);
+const buttonEncode = document.createElement("button");
+buttonEncode.innerHTML = "Encode";
+document.body.appendChild(buttonEncode);
+const buttonDecode = document.createElement("button");
+buttonDecode.innerHTML = "Decode";
+document.body.appendChild(buttonDecode);
+let imageData;
+const str = "pleasehelpjohndelanciehastrappedmehere";
+let bitstr = [];
+for (let i = 0; i < str.length; i++) {
+	let num = str[i].charCodeAt(0);
+	for (let j = 0; j < 8; j++) {
+		bitstr.push(num & 1);
+		num >>= 1;
+	}
+}
+function getbit(i, shift) {
+	return bitstr[i % bitstr.length] << shift;
+}
+
+inputFile.onchange = function() {
+	const reader = new FileReader();
+	const img = new Image();
+	img.addEventListener("load", function() {
+		canvas.width = img.naturalWidth;
+		canvas.height = img.naturalHeight;
+		ctx.drawImage(img, 0, 0);
+		imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		let data = imageData.data;
+		for (let i = 0; i < imageData.width * imageData.height; i++) {
+			let j = i * 4;
+			let bits = i * 12;
+			data[j    ] = (data[j    ] & 0b11110000)
+				//+ getbit(bits, 5)
+				//+ getbit(bits + 1, 4)
+				+ getbit(bits + 2, 3)
+				+ getbit(bits + 3, 2)
+				+ getbit(bits + 4, 1)
+				+ getbit(bits + 5, 0);
+			data[j + 1] = (data[j + 1] & 0b11110000)
+				//+ getbit(bits + 6, 5)
+				//+ getbit(bits + 7, 4)
+				+ getbit(bits + 8, 3)
+				+ getbit(bits + 9, 2)
+				+ getbit(bits + 10, 1)
+				+ getbit(bits + 11, 0);
+			data[j + 2] = (data[j + 2] & 0b11110000)
+				//+ getbit(bits + 12, 5)
+				//+ getbit(bits + 13, 4)
+				+ getbit(bits + 14, 3)
+				+ getbit(bits + 15, 2)
+				+ getbit(bits + 16, 1)
+				+ getbit(bits + 17, 0);
+		}
+		ctx.putImageData(imageData, 0, 0);
+	}, false);
+	reader.addEventListener("load", function() {
+		img.src = reader.result;
+	}, false);
+	reader.readAsDataURL(inputFile.files[0]);
+}
+})();
+	</script>
+</body>
+</html>

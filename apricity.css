@@ -1,0 +1,273 @@
+/*Based on Gruvbox CSS, but you can hardly tell now from the file*/
+:root {
+	--clr-text: #000;
+	--clr-back: #fce;
+	--clr-a-text: #515;
+	--clr-a-back: #d9d;
+	--clr-pre-back: #eae;
+	--clr-quote-bar: #304;
+	--clr-button-border: #304;
+	
+	--clr-text: #000;
+	--clr-back: #fec;
+	--clr-a-text: #515;
+	--clr-a-back: #d9d;
+	--clr-pre-back: #cb9;
+	--clr-quote-bar: #430;
+	--clr-button-border: #753;
+	
+	--clr-selected-bg: #bde;
+	--clr-selected-bg: rgba(221, 221, 221, .998039); /* 254.5 / 255 is the cutoff */
+	--clr-selected-fg: #513;
+	
+	--clr-red-fg: #fa9;
+	--clr-red-bg: #610;
+	--clr-green-fg: #dd9;
+	--clr-green-bg: #440;
+	--clr-yellow-fg: #fd9;
+	--clr-yellow-bg: #750;
+	--clr-blue-fg: #cdc;
+	--clr-blue-bg: #244;
+	--clr-purple-fg: #ecc;
+	--clr-purple-bg: #534;
+	--clr-aqua-fg: #ceb;
+	--clr-aqua-bg: #354;
+	--clr-orange-fg: #fc8;
+	--clr-orange-bg: #730;
+	
+	--padding-universal: .7em;
+}
+
+main, header {
+	display: block;
+	font-family: monospace;
+	max-width: 50rem;
+	padding: 3rem;
+	margin: 0 auto 0 auto;
+	border: 0px solid #fff;
+	background: var(--clr-back);
+}
+header {
+	padding-bottom: 0;
+	padding-top: 1em;
+}
+main {
+	padding-top: 1em;
+	padding-bottom: 3em;
+}
+
+header > h1 {
+	margin: 0;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+}
+
+::selection {
+	background: var(--clr-selected-bg);
+	color: var(--clr-selected-fg);
+}
+
+body {
+	color: var(--clr-text);
+	background-color: var(--clr-back);
+	font-family: monospace;
+	margin: 0;
+	font-size: 13px;
+}
+
+:root {
+	--clr-red: "%238ac";
+}
+
+.svgred {
+	fill: #000;
+}
+
+body.testsvg {
+	background-image: url('data:image/svg+xml;utf8,<svg preserveAspectRatio="none" viewBox="0 0 1 1" xmlns="http://www.w3.org/2000/svg">\
+	<rect x="0" y="0" width="1" height=".5" style="fill:%238ac" />\
+	<rect x="0" y=".5" width="1" height=".5" style="fill:%2368a" />\
+	<polygon points="0,0  .5,0,  0,1" style="fill:%23acf" />\
+</svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg preserveAspectRatio="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">\
+	<rect x="0" y="0" width="24" height="24" style="fill:%23aaa" />\
+	<rect x="0" y="0" width="12" height="12" style="fill:%23fffaaa" />\
+	<circle cx="3" cy="3" r="1" style="fill:%23555" />\
+	<circle cx="9" cy="3" r="1" style="fill:%23555" />\
+</svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg preserveAspectRatio="none" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">\
+	<path d="\
+		M 0,0 L 1,1 L 0,2 z M 8,0 L 7,1 L 8,2 z M 6,0 L 4,2 L 6,4 L 7,3 L 6,2 L 7,1 z\
+		M 2,4 L 3,3 L 4,4 L 3,5 z L 2,4 L 1,3 L 0,4 L 0,6 L 1,7 L 2,6 L 1,5 z M 8,4 L 7,5 L 8,6 z\
+	" fill="%23ffe5ca" shape-rendering="crispEdges"></path>\
+	<path d="\
+		M 1,1 L 2,2 L 3,1 L 4,2 L 5,1 L 4,0 L 2,0 z M 2,8 L 4,8 L 3,7 z M 3,3 L 4,4 L 5,3 L 4,2 z\
+		M 4,6 L 5,7 L 6,6 L 7,7 L 8,6 L 6,4 z M 6,8 L 8,8 L 7,7 z M 6,0 L 7,1 L 8,0 z\
+	" fill="%23f5eacf" shape-rendering="crispEdges"></path>\
+	<path d="\
+		M 0,2 L 0,4 L 1,3 z M 6,2 L 7,3 L 6,4 L 7,5 L 8,4 L 8,2 L 7,1 z M 4,4 L 5,5 L 6,4 L 5,3 z\
+		M 1,5 L 2,6 L 1,7 L 2,8 L 4,6 L 2,4 z M 0,6 L 0,8 L 1,7 z M 7,7 L 8,8 L 8,6 z\
+	" fill="%23ffeac5" shape-rendering="crispEdges"></path>\
+	<path d="\
+		M 0,0 L 1,1 L 2,0 z M 0,8 L 2,8 L 1,7 z M 1,1 L 0,2 L 2,4 L 4,2 L 3,1 L 2,2 z\
+		M 3,5 L 4,6 L 5,5 L 4,4 z M 3,7 L 4,8 L 6,8 L 7,7 L 6,6 L 5,7 L 4,6 z M 4,0 L 5,1 L 6,0 z\
+	" fill="%23fae5cf" shape-rendering="crispEdges"></path>\
+</svg>');
+	background-size: 4em 4em;
+}
+
+body::-webkit-scrollbar {
+	width: 5px;
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--clr-button-border);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--clr-text);
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: var(--clr-text);
+}
+
+:root {
+	scrollbar-color: var(--clr-text) var(--clr-back);
+}
+
+pre {
+	border: 0;
+	tab-size: 4;
+	white-space: pre-wrap;
+}
+
+pre, .red, .green, .yellow, .blue, .aqua, .purple, .orange {
+	padding: var(--padding-universal);
+}
+
+code, pre, blockquote {
+	background-color: var(--clr-pre-back);
+}
+
+a, a:active, a:visited {
+	color: var(--clr-a-text);
+	/*background-color: var(--clr-a-back);*/
+	text-decoration: none;
+}
+a::after {
+	content: "]";
+	color: var(--clr-text);
+}
+a::before {
+	content: "[";
+	color: var(--clr-text);
+}
+
+a[target="_blank"]:after {
+	display: inline-block; /* gotta set the width before the image loads or for a split bit the rest of the text will be dead */
+	width: calc(8px + 1ch); /*I swear that CSS is turing-complete*/
+	/*content: url(arrow8.png) "]";*/
+	content: url('data:image/svg+xml;utf8,<svg width="8" height="8" xmlns="http://www.w3.org/2000/svg"> <polygon points="0,0 8,0 8,8" fill="%23515" /> </svg>') "]";
+	/*svg requires xmlns*/
+}
+
+a[target="_blank"]::before {
+	content: "[";
+}
+
+blockquote {
+	border-left: 5px solid var(--clr-quote-bar);
+	padding: var(--padding-universal) 10px;
+	margin: 1em 10px;
+	margin-right: 0;
+}
+
+button { /* to be styled with a color */
+	border: 5px solid var(--clr-quote-bar);
+	font-size: 100%;
+}
+
+input, textarea, button {
+	font-family: inherit;
+}
+
+hr {
+	border: 2px solid var(--clr-quote-bar);
+}
+
+div.sidebar {
+	position: fixed;
+	top: 30%;
+	left: 0;
+	height: 40%;
+	width: 2rem;
+	background-color: var(--clr-pre-back);
+}
+
+img {
+}
+
+.q img {
+	height: 12rem;
+}
+
+
+
+img.article {
+	width: 100%;
+	height: auto;
+}
+
+nav {
+	background-color: var(--clr-pre-back);
+	position: sticky;
+	position: -webkit-sticky;
+	width: 100%;
+	left: 0;
+	top: 0;
+	padding-top: 1em;
+	padding-bottom: 1em;
+	margin: 0;
+	/*overflow: scroll;*/
+	/*white-space: nowrap;*/
+	border-bottom: 5px solid var(--clr-quote-bar);
+	/*border-left: 5px solid var(--clr-quote-bar);*/
+}
+@media (max-width: 10em) {
+	:root {
+		--clr-text: #ff0;
+	}
+}
+
+nav::before {
+	/*color: var(--clr-back);*/
+	content: "⠫";
+	display: block;
+	position: absolute;
+	top: .5rem;
+	font-size: 3em;
+	left: .5rem;
+}
+
+nav ol {
+	list-style: none;
+}
+
+nav li {
+	display: inline;
+}
+
+
+body.callmemelody { /* ssh */
+	background-image: url('data:image/svg+xml;utf8,<svg width="10" height="60" preserveAspectRatio="none" viewBox="0 0 1 5" xmlns="http://www.w3.org/2000/svg">\
+	<rect x="0" y="0" width="1" height="1" style="fill:%23faeccf" />\
+	<rect x="0" y="1" width="1" height="1" style="fill:%23ffeacc" />\
+	<rect x="0" y="2" width="1" height="1" style="fill:%23feeece" />\
+	<rect x="0" y="3" width="1" height="1" style="fill:%23ffeacc" />\
+	<rect x="0" y="4" width="1" height="1" style="fill:%23faeccf" />\
+</svg>');
+}

@@ -1,0 +1,381 @@
+<!DOCYTPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Karaoke file loader</title>
+	<link rel="stylesheet" href="apricity.css">
+</head>
+<body>
+	<nav>
+		<ol>
+			<li><a href="index.html">Home</a></li>
+			<li><a href="index.html">Pop songs and "pop" songs</a></li>
+			<li><a href="index.html">Vic Fontaine</a></li>
+			<li><a href="index.html">TV/Video games</a></li>
+			<li><a href="index.html">Fan songs</a></li>
+			<li><a href="index.html">Songs about John de Lancie</a></li>
+			<li><a href="delancie.html">Images of John de Lancie</a></li>
+			<li><a href="internalsvg.html">internal</a></li>
+		</ol>
+	</nav>
+	<main id="main">
+		<h1>Karaoke loader</h1>
+	</main>
+	<script>
+let main = document.getElementById("main");
+let cnsl = document.createElement("h1");
+//main.appendChild(cnsl);
+cnsl.innerHTML = "console";
+let karcont = document.createElement("div");
+main.appendChild(karcont);
+let actx = new AudioContext();
+let arrayBuffer, audioBuffer;
+let dataBuffer = [];
+function bufferToWave(abuffer, len) { // all hail the person who wrote this. it's from stackoverflow or something
+	var numOfChan = abuffer.numberOfChannels,
+			length = len * numOfChan * 2 + 44,
+			buffer = new ArrayBuffer(length),
+			view = new DataView(buffer),
+			channels = [], i, sample,
+			offset = 0,
+			pos = 0;
+	// write WAVE header
+	setUint32(0x46464952);							// "RIFF"
+	setUint32(length - 8);							// file length - 8
+	setUint32(0x45564157);							// "WAVE"
+
+	setUint32(0x20746d66);							// "fmt " chunk
+	setUint32(16);									// length = 16
+	setUint16(1);									// PCM (uncompressed)
+	setUint16(numOfChan);
+	setUint32(abuffer.sampleRate);
+	setUint32(abuffer.sampleRate * 2 * numOfChan);	// avg. bytes/sec
+	setUint16(numOfChan * 2);						// block-align
+	setUint16(16);									// 16-bit (hardcoded in this demo)
+
+	setUint32(0x61746164);							// "data" - chunk
+	setUint32(length - pos - 4);					// chunk length
+	// write interleaved data
+	for(i = 0; i < abuffer.numberOfChannels; i++) {
+		channels.push(abuffer.getChannelData(i));
+	}
+	while(pos < length) {
+		for(i = 0; i < numOfChan; i++) {						 // interleave channels
+			sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+			sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; // scale to 16-bit signed int
+			view.setInt16(pos, sample, true);					// write 16-bit sample
+			pos += 2;
+		}
+		offset++																		 // next source sample
+	}
+	// create Blob
+	return new Blob([buffer], {type: "audio/wav"});
+	function setUint16(data) {
+		view.setUint16(pos, data, true);
+		pos += 2;
+	}
+	function setUint32(data) {
+		view.setUint32(pos, data, true);
+		pos += 4;
+	}
+}
+let button = document.createElement("button");
+button.innerHTML = "Bake karaoke";
+main.appendChild(button);
+let playButton = document.createElement("button");
+playButton.innerHTML = "Play";
+main.appendChild(playButton);
+let a = document.createElement("a");
+main.appendChild(a);
+a.innerHTML = "Download last audio part";
+let aud = document.createElement("audio");
+main.appendChild(aud);
+let myArrayBuffer;
+function relu(x) {
+	return x < 0 ? 0 : x;
+}
+function randHex() {
+	return "0123456789abcdef"[Math.floor(Math.random() * 16)];
+}
+function compile() {
+	let date = new Date().getTime();
+	myArrayBuffer = actx.createBuffer(2, dataBuffer.length, actx.sampleRate); // len indexes
+	for (let channel = 0; channel < 1;/*myArrayBuffer.numberOfChannels*/ channel++) {
+		let nowBuffering = myArrayBuffer.getChannelData(channel);
+		for (let i = 0; i < dataBuffer.length; i++) {
+			nowBuffering[i] = dataBuffer[i] / 8;
+		}
+	}
+	for (let i = 0; i < myArrayBuffer.getChannelData(0).length; i++) {
+		myArrayBuffer.getChannelData(1)[i] = myArrayBuffer.getChannelData(0)[i];
+	}
+	let url = URL.createObjectURL(bufferToWave(myArrayBuffer, myArrayBuffer.getChannelData(0).length));
+	a.href = url;
+	aud.src = url;
+	a.download = randHex() + randHex() + randHex() + randHex() + ".wav";
+	button.innerHTML = "Karaoke baked";
+	return new Date().getTime() - date;
+}
+let spans = [document.createElement("span")];
+let spants = [0];
+let spani = 0;
+let stanzais = [0]; // contains the indexes of the first span of each stanza
+let stanzi = 0;
+function step() {
+	if (spani == stanzais[stanzi + 1]) {
+		while (karcont.firstChild) {
+			karcont.removeChild(karcont.lastChild);
+		}
+		stanzi++;
+			cnsl.innerHTML = "yo";
+		for (let i = stanzais[stanzi]; i < stanzais[stanzi + 1]; i++) {
+			karcont.appendChild(spans[i]);
+		}
+	}
+	if (aud.currentTime > spants[spani + 1]) {
+		spans[spani].style.color = "#000";
+		spani++;
+		spans[spani].style.color = "#f00";
+	}
+	if (!aud.paused) {
+		window.requestAnimationFrame(step);
+	}
+}
+let source;
+function play() {
+	/*source = actx.createBufferSource();
+	source.buffer = myArrayBuffer;
+	source.connect(actx.destination);*/
+	if (aud.paused) {
+		window.requestAnimationFrame(step);
+		aud.play();
+		playButton.innerHTML = "Pause";
+	}
+	else {
+		aud.pause();
+		playButton.innerHTML = "Play";
+	}
+}
+function halfmod(a, b) {
+	return a / b - Math.floor(a / b);
+}
+let alnum = "0123456789abcdef";
+let alnumobj = {};
+for (let i = 0; i < alnum.length; i++) {
+	alnumobj[alnum[i]] = i;
+}
+alnumobj["-"] = -1; // ah, yes. negatives as digit potatoes
+function baseCToN(str) {
+	let n = 0;
+	while (str.length > 0) {
+		n *= 12;
+		n += alnumobj[str[0]];
+		str = str.substr(1);
+	}
+	return n;
+}
+function mod(a, b) {
+	return a - b * Math.floor(a / b);
+}
+function nToBaseC(n) {
+	let str = "";
+	let dozits = 0;
+	if (n < 0) {
+		dozits = Math.ceil(Math.log(-n) / Math.log(12));
+	}
+	else {
+		dozits = Math.floor(Math.log(n) / Math.log(12)) + 1;
+	}
+	for (let i = 0; i < dozits; i++) {
+		str = "0123456789ab"[Math.floor(mod(n, 12))] + str;
+		n = Math.floor(n / 12);
+	}
+	if (n < 0) {
+		str = "-" + str;
+	}
+	return str;
+}
+function pushZerosTil(n) {
+	for (let i = dataBuffer.length; i < n; i++) {
+		dataBuffer[i] = 0;
+	}
+}
+function addNote(startT, len, pitch, volume) {
+	let startI = Math.floor(startT * actx.sampleRate);
+	let startII = startI + 1000;
+	let endI = Math.floor((startT + len) * actx.sampleRate);
+	pushZerosTil(endI);
+	pitch = baseCToN(pitch);
+	let freq = 55 * 2 ** (pitch / 12); // A1 is 0
+	let wavlen = actx.sampleRate / freq;
+	for (let i = startI; i < startII; i++) {
+		dataBuffer[i] += (2 * halfmod(i, wavlen) - 1) * volume * (i - startI) / 1000;
+	}
+	for (let i = startII; i < endI; i++) {
+		dataBuffer[i] += (2 * halfmod(i, wavlen) - 1) * volume;
+	}
+}
+function assemble(str) {
+	let asmStrings = str.split("\n");
+	let lines = [];
+	let funcIndexes = {};
+	let logs = "";
+	let currLine = 0;
+	for (let line of asmStrings) { // get function line numbers
+		if (line.length == 0 || line[0] == " ") { // for "commenting", put a space at the beginning
+			
+		}
+		else if (line[line.length - 1] == ":") {
+			funcIndexes[line.substring(0, line.length - 1)] = lines.length;
+		}
+		else {
+			lines.push(line.split(" "));
+			logs += currLine++ + " " + line + "\n";
+		}
+	}
+	logs += JSON.stringify(funcIndexes, null, 4);
+	let calledFromLine = 0;
+	let calledFromT = 0; // seconds
+	currLine = 0;
+	let currT = 0; // seconds
+	let maxCalls = 10000;
+	logs = "";
+	let volume = 1;
+	let beatLength = 1;
+	for (let i = 0; i < maxCalls; i++) {
+		let line = lines[currLine];
+		logs += currLine + " " + lines[currLine] + "\n";
+		if (/\d/.test(line[0])) {
+			let noteLen = Number(line[0]) * beatLength;
+			if (line[1] == "no") {
+				let span = document.createElement("span");
+				spans.push(span);
+				spants.push(currT);
+			}
+			else {
+				addNote(currT, noteLen, line[1], volume);
+				if (line.length > 2) {
+					let span = document.createElement("span");
+					for (let i = 2; i < line.length; i++) {
+						span.innerHTML += line[i];
+						if (i + 1 < line.length) {
+							span.innerHTML += " ";
+						}
+					}
+					spans.push(span);
+					spants.push(currT);
+				}
+			}
+			currT += noteLen;
+		}
+		else if (line[0] == "newscreen") {
+			stanzais.push(spans.length);
+		}
+		else if (line[0] == "ins" || line[0] == "jmp") {
+			//calledFromT    = currT;
+			calledFromLine = currLine;
+			currLine = funcIndexes[line[1]];
+			currLine--; // counteract the end
+		}
+		else if (line[0] == "pusht") {
+			calledFromT    = currT;
+		}
+		else if (line[0] == "popt") {
+			currT = calledFromT;
+		}
+		else if (line[0] == "ret") {
+			currLine = calledFromLine;
+		}
+		else if (line[0] == "skip") {
+		}
+		else if (line[0] == "vol") {
+			volume = Number(line[1]);
+		}
+		else if (line[0] == "beat") {
+			beatLength = Number(line[1]);
+		}
+		else if (line[0] == "log") {
+			logs += "> " + line[1] + "\n";
+		}
+		else if (line[0] == "leng") {
+			dataBuffer.length = Number(line[1]) * actx.sampleRate;
+			dataBuffer.fill(0);
+		}
+		else if (line[0] == "done") {
+			spans.push(document.createElement("span"));
+			spants.push(currT);
+			stanzais.push(spans.length);
+			break;
+		}
+		currLine++;
+		if (i == maxCalls - 1) {
+			logs += "max calls met, stopping";
+		}
+	}
+	compile();
+}
+function shift(str, n) {
+	let asmStrings = str.split("\n");
+	let newStr = "";
+	for (let line of asmStrings) {
+		if (line.length == 0) {
+			newStr += "\n";
+		}
+		else if (/\d/.test(line[0])) {
+			let parts = line.split(" ");
+			if (parts[1] == "no") {
+				newStr += line + "\n";
+				continue;
+			}
+			parts[1] = nToBaseC(baseCToN(parts[1]) + n);
+			newStr += parts[0];
+			for (let i = 1; i < parts.length; i++) { // smarter way
+				newStr += " " + parts[i];
+			}
+			newStr += "\n";
+		}
+		else {
+			newStr += line + "\n";
+		}
+	}
+	return newStr;
+}
+// 0123456789ab 
+// a bc d ef g 
+let demoSong;
+let urlKeys = [];
+function getKeys() {
+	let url = location.href;
+	for (var i = url.length - 1; i >= 0; i--) {
+		if (url[i] == "?") {
+			break;
+		}
+	}
+	let keys = [];
+	url.substring(i + 1).split("&").map(x => x.split("=")).forEach(x => keys[x[0]] = x[1]);
+	// I'm proud of myself for this line of code.
+	return keys;
+}
+urlKeys = getKeys();
+
+let loadscript = document.createElement("script");
+loadscript.onload = function() {
+	loadSong();
+}
+cnsl.innerHTML = JSON.stringify(urlKeys, null, 4);
+loadscript.src = "kjs/" + urlKeys.song + ".js";
+document.head.appendChild(loadscript);
+
+
+button.addEventListener("click", function() {
+	button.innerHTML = "Baking karaoke";
+	setTimeout(function() {
+		assemble(demoSong);
+	});
+}, false);
+playButton.addEventListener("click", function() {
+	play();
+}, false);
+	</script>
+</body>
+</html>
